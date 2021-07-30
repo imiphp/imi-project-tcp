@@ -3,7 +3,10 @@
     "type": "project",
     "description": "imi 框架的 TCP Server 项目。https://imiphp.com",
 	"require": {
-		"yurunsoft/imi": "~1.0"
+        "php": ">=7.4",
+        "imiphp/imi": "2.0.x-dev",
+        "imiphp/imi-swoole": "2.0.x-dev",
+        "imiphp/imi-workerman": "2.0.x-dev"
 	},
     "autoload": {
         "psr-4" : {

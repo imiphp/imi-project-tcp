@@ -1,16 +1,16 @@
 <?php
+
 namespace ImiApp\TCPServer\DataParser;
 
 class JsonObjectEOFParser extends \Imi\Server\DataParser\JsonObjectParser
 {
     /**
-     * 编码为存储格式
+     * 编码为存储格式.
+     *
      * @param mixed $data
-     * @return mixed
      */
-    public function encode($data)
+    public function encode($data): string
     {
-        return \json_encode($data) . "\r\n";
+        return \json_encode($data)."\r\n";
     }
-    
 }

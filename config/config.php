@@ -1,27 +1,26 @@
 <?php
+
+use Imi\App;
+
+$mode = App::isInited() ? App::getApp()->getType() : null;
+
 return [
     // 项目根命名空间
     'namespace'    =>    'ImiApp',
 
     // 配置文件
     'configs'    =>    [
-        'beans'        =>    __DIR__ . '/beans.php',
+        'beans'        =>    __DIR__.'/beans.php',
     ],
 
-    // 扫描目录
-    'beanScan'    =>    [
-        'ImiApp\Listener',
-        'ImiApp\Task',
-    ],
-
-    // 组件命名空间
-    'components'    =>  [
+    'ignoreNamespace'   => [
+        'ImiApp\vendor\*',
     ],
 
     // 主服务器配置
-    'mainServer'    =>    [
+    'mainServer'    =>    'swoole' === $mode ? [
         'namespace'    =>    'ImiApp\TCPServer',
-        'type'        =>    Imi\Server\Type::TCP_SERVER,
+        'type'        =>    Imi\Swoole\Server\Type::TCP_SERVER,
         'host'        =>    '0.0.0.0',
         'port'        =>    8082,
         'configs'    =>    [
@@ -46,7 +45,7 @@ return [
         'dataParser'        => \ImiApp\TCPServer\DataParser\JsonObjectEOFParser::class,
         // 固定包头分包数据处理器
         // 'dataParser'            => \ImiApp\TCPServer\DataParser\JsonObjectFixedParser::class,
-    ],
+    ] : [],
 
     // 子服务器（端口监听）配置
     'subServers'        =>    [
@@ -58,116 +57,145 @@ return [
         // ]
     ],
 
-    // 连接池配置
-    'pools'    =>    [
-        // 主数据库
-        // 'maindb'    =>    [
-        //     // 同步池子
-        //     'sync'    =>    [
-        //         'pool'    =>    [
-        //             'class'        =>    \Imi\Db\Pool\SyncDbPool::class,
-        //             'config'    =>    [
-        //                 'maxResources'    =>    10,
-        //                 'minResources'    =>    0,
-        //             ],
-        //         ],
-        //         'resource'    =>    [
-        //             'host'        => '127.0.0.1',
-        //             'port'        => 3306,
-        //             'username'    => 'root',
-        //             'password'    => 'root',
-        //             'database'    => 'database_name',
-        //             'charset'     => 'utf8mb4',
-        //         ],
-        //     ],
-        //     // 异步池子，worker进程使用
-        //     'async'    =>    [
-        //         'pool'    =>    [
-        //             'class'        =>    \Imi\Db\Pool\CoroutineDbPool::class,
-        //             'config'    =>    [
-        //                 'maxResources'    =>    10,
-        //                 'minResources'    =>    0,
-        //             ],
-        //         ],
-        //         'resource'    =>    [
-        //             'host'        => '127.0.0.1',
-        //             'port'        => 3306,
-        //             'username'    => 'root',
-        //             'password'    => 'root',
-        //             'database'    => 'database_name',
-        //             'charset'     => 'utf8mb4',
-        //         ],
-        //     ]
-        // ],
-        'redis'    =>    [
-            'sync'    =>    [
-                'pool'    =>    [
-                    'class'        =>    \Imi\Redis\SyncRedisPool::class,
-                    'config'    =>    [
-                        'maxResources'    =>    10,
-                        'minResources'    =>    0,
-                    ],
-                ],
-                'resource'    =>    [
-                    'host'      => '127.0.0.1',
-                    'port'      => 6379,
-                    'password'  => null,
-                ]
+    // Workerman 服务器配置
+    'workermanServer' => [
+        'tcp' => [
+            'namespace'   => 'ImiApp\TCPServer',
+            'type'        => Imi\Workerman\Server\Type::TCP,
+            'host'        => '0.0.0.0',
+            'port'        => 8082,
+            'configs'     => [
+                // EOF \r\n 自动分包数据处理器
+                'protocol' => \Imi\Workerman\Server\Protocol\TextCRLF::class,
+                // 固定包头分包数据处理器
+                // 'protocol' => \Imi\Workerman\Server\Protocol\FrameWithLength::class,
             ],
-            'async'    =>    [
-                'pool'    =>    [
-                    'class'        =>    \Imi\Redis\CoroutineRedisPool::class,
-                    'config'    =>    [
-                        'maxResources'    =>    10,
-                        'minResources'    =>    0,
-                    ],
-                ],
-                'resource'    =>    [
-                    'host'      => '127.0.0.1',
-                    'port'      => 6379,
-                    'password'  => null,
-                ]
-            ],
+            // EOF自动分包数据处理器
+            'dataParser'        => \ImiApp\TCPServer\DataParser\JsonObjectEOFParser::class,
+            // 固定包头分包数据处理器
+            // 'dataParser'            => \ImiApp\TCPServer\DataParser\JsonObjectFixedParser::class,
         ],
     ],
+
+    // 连接池配置
+    'pools'    => 'swoole' === $mode ? [
+        // 主数据库
+        'maindb'    => [
+            'pool'    => [
+                'class'        => \Imi\Swoole\Db\Pool\CoroutineDbPool::class,
+                'config'       => [
+                    'maxResources'    => 10,
+                    'minResources'    => 1,
+                ],
+            ],
+            'resource'    => [
+                'host'        => '127.0.0.1',
+                'port'        => 3306,
+                'username'    => 'root',
+                'password'    => 'root',
+                'database'    => 'mysql',
+                'charset'     => 'utf8mb4',
+            ],
+        ],
+        'redis'    => [
+            'pool'    => [
+                'class'        => \Imi\Swoole\Redis\Pool\CoroutineRedisPool::class,
+                'config'       => [
+                    'maxResources'    => 10,
+                    'minResources'    => 1,
+                ],
+            ],
+            'resource'    => [
+                'host'      => '127.0.0.1',
+                'port'      => 6379,
+                'password'  => null,
+            ],
+        ],
+    ] : [],
 
     // 数据库配置
     'db'    =>    [
         // 数默认连接池名
         'defaultPool'    =>    'maindb',
+        // FPM、Workerman 下用
+        'connections'   => [
+            'maindb' => [
+                'host' => '127.0.0.1',
+                'port'        => 3306,
+                'username' => 'root',
+                'password' => 'root',
+                'database' => 'mysql',
+                'charset'  => 'utf8mb4',
+                // 'port'    => '3306',
+                // 'timeout' => '建立连接超时时间',
+                // 'charset' => '',
+                // 使用 hook pdo 驱动（缺省默认）
+                // 'dbClass' => \Imi\Db\Drivers\PdoMysql\Driver::class,
+                // 使用 hook mysqli 驱动
+                // 'dbClass' => \Imi\Db\Drivers\Mysqli\Driver::class,
+                // 使用 Swoole MySQL 驱动
+                // 'dbClass' => \Imi\Swoole\Db\Drivers\Swoole\Driver::class,
+                // 数据库连接后，执行初始化的 SQL
+                // 'sqls' => [
+                //     'select 1',
+                //     'select 2',
+                // ],
+            ],
+        ],
     ],
 
     // redis 配置
     'redis' =>  [
         // 数默认连接池名
         'defaultPool'   =>  'redis',
+        // FPM、Workerman 下用
+        'connections'   => [
+            'redis' => [
+                'host'	=>	'127.0.0.1',
+                'port'	=>	6379,
+                // 是否自动序列化变量
+                'serialize'	=>	true,
+                // 密码
+                'password'	=>	null,
+                // 第几个库
+                'db'	=>	0,
+            ],
+        ],
     ],
 
-    // 内存表配置
-    'memoryTable'   =>  [
-        // 't1'    =>  [
-        //     'columns'   =>  [
-        //         ['name' => 'name', 'type' => \Swoole\Table::TYPE_STRING, 'size' => 16],
-        //         ['name' => 'quantity', 'type' => \Swoole\Table::TYPE_INT],
-        //     ],
-        //     'lockId'    =>  'atomic',
-        // ],
-    ],
-
-    // 锁
-    'lock'  =>[
-        'list'  =>  [
-            'redis' =>  [
-                'class' =>  'RedisLock',
-                'options'   =>  [
-                    'poolName'  =>  'redis',
+    // 日志配置
+    'logger' => [
+        'channels' => [
+            'imi' => [
+                'handlers' => [
+                    [
+                        'class'     => \Imi\Log\Handler\ConsoleHandler::class,
+                        'formatter' => [
+                            'class'     => \Imi\Log\Formatter\ConsoleLineFormatter::class,
+                            'construct' => [
+                                'format'                     => null,
+                                'dateFormat'                 => 'Y-m-d H:i:s',
+                                'allowInlineLineBreaks'      => true,
+                                'ignoreEmptyContextAndExtra' => true,
+                            ],
+                        ],
+                    ],
+                    [
+                        'class'     => \Monolog\Handler\RotatingFileHandler::class,
+                        'construct' => [
+                            'filename' => dirname(__DIR__).'/.runtime/logs/log.log',
+                        ],
+                        'formatter' => [
+                            'class'     => \Monolog\Formatter\LineFormatter::class,
+                            'construct' => [
+                                'dateFormat'                 => 'Y-m-d H:i:s',
+                                'allowInlineLineBreaks'      => true,
+                                'ignoreEmptyContextAndExtra' => true,
+                            ],
+                        ],
+                    ],
                 ],
             ],
-        ]
-    ],
-
-    // atmoic 配置
-    'atomics'    =>  [
-        // 'atomicLock'   =>  1,
+        ],
     ],
 ];
