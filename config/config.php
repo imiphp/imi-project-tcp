@@ -14,7 +14,6 @@ return [
     ],
 
     'ignoreNamespace'   => [
-        'ImiApp\vendor\*',
     ],
 
     // 主服务器配置
