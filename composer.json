@@ -4,8 +4,8 @@
     "description": "imi 框架的 TCP Server 项目。https://imiphp.com",
 	"require": {
         "php": ">=7.4",
-        "imiphp/imi": "2.0.x-dev",
-        "imiphp/imi-workerman": "2.0.x-dev"
+        "imiphp/imi": "~2.0.0",
+        "imiphp/imi-workerman": "~2.0.0"
 	},
     "autoload": {
         "psr-4" : {
