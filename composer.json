@@ -10,6 +10,9 @@
     "autoload": {
         "psr-4" : {
 			"ImiApp\\" : "./"
-        }
+        },
+        "files": [
+            "init.php"
+        ]
 	}
 }
