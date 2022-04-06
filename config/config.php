@@ -173,6 +173,10 @@ return [
                         'formatter' => [
                             'class'     => \Imi\Log\Formatter\ConsoleLineFormatter::class,
                             'construct' => [
+                                'level'  => \Imi\Log\MonoLogger::DEBUG, // 开发调试环境
+                                // 'level'  => \Imi\Log\MonoLogger::INFO,  // 生产环境
+                            ],
+                            'construct' => [
                                 'format'                     => null,
                                 'dateFormat'                 => 'Y-m-d H:i:s',
                                 'allowInlineLineBreaks'      => true,
@@ -183,6 +187,8 @@ return [
                     [
                         'class'     => \Monolog\Handler\RotatingFileHandler::class,
                         'construct' => [
+                            'level'  => \Imi\Log\MonoLogger::DEBUG, // 开发调试环境
+                            // 'level'  => \Imi\Log\MonoLogger::INFO,  // 生产环境
                             'filename' => App::get(AppContexts::APP_PATH_PHYSICS) . '/.runtime/logs/log.log',
                         ],
                         'formatter' => [
