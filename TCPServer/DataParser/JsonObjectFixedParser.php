@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ImiApp\TCPServer\DataParser;
 
 class JsonObjectFixedParser extends \Imi\Server\DataParser\JsonObjectParser
@@ -11,9 +13,9 @@ class JsonObjectFixedParser extends \Imi\Server\DataParser\JsonObjectParser
      */
     public function encode($data): string
     {
-        $content = \json_encode($data);
+        $content = json_encode($data);
 
-        return pack('N', strlen($content)).$content;
+        return pack('N', \strlen($content)) . $content;
     }
 
     /**
@@ -23,6 +25,6 @@ class JsonObjectFixedParser extends \Imi\Server\DataParser\JsonObjectParser
      */
     public function decode(string $data)
     {
-        return \json_decode(substr($data, 4));
+        return json_decode(substr($data, 4));
     }
 }

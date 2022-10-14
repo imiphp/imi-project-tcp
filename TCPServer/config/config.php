@@ -1,28 +1,25 @@
 <?php
 
-use Imi\Log\LogLevel;
+declare(strict_types=1);
+
 return [
-    'configs'    =>    [
+    'configs'    => [
     ],
-    // bean扫描目录
-    'beanScan'    =>    [
-        'ImiApp\TCPServer\Controller',
-    ],
-    'beans'    =>    [
-        'TcpDispatcher'    =>    [
-            'middlewares'    =>    [
+    'beans'    => [
+        'TcpDispatcher'    => [
+            'middlewares'    => [
                 \Imi\Server\TcpServer\Middleware\RouteMiddleware::class,
             ],
         ],
-        'GroupRedis'    =>    [
-            'redisPool'    =>    'redis',
+        'GroupRedis'    => [
+            'redisPool'    => 'redis',
         ],
-        'ServerGroup'   =>  [
-            'status'        =>  false,
+        'ServerGroup'   => [
+            'status'        => false,
         ],
-        'ConnectContextRedis'    =>    [
-            'redisPool' =>   'redis',
-            'lockId'    =>   'redis',
+        'ConnectContextRedis'    => [
+            'redisPool' => 'redis',
+            'lockId'    => 'redis',
         ],
     ],
 ];

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ImiApp\TCPServer\DataParser;
 
 class JsonObjectEOFParser extends \Imi\Server\DataParser\JsonObjectParser
@@ -11,6 +13,6 @@ class JsonObjectEOFParser extends \Imi\Server\DataParser\JsonObjectParser
      */
     public function encode($data): string
     {
-        return \json_encode($data)."\r\n";
+        return json_encode($data) . "\r\n";
     }
 }
