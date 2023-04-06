@@ -85,8 +85,10 @@ return [
                 // @phpstan-ignore-next-line
                 'class'        => \Imi\Swoole\Db\Pool\CoroutineDbPool::class,
                 'config'       => [
-                    'maxResources'    => 10,
-                    'minResources'    => 0,
+                    'maxResources'              => 32,
+                    'minResources'              => 0,
+                    'checkStateWhenGetResource' => false,
+                    'heartbeatInterval'         => 60,
                 ],
             ],
             'resource'    => [
@@ -103,8 +105,10 @@ return [
                 // @phpstan-ignore-next-line
                 'class'        => \Imi\Swoole\Redis\Pool\CoroutineRedisPool::class,
                 'config'       => [
-                    'maxResources'    => 10,
-                    'minResources'    => 0,
+                    'maxResources'              => 32,
+                    'minResources'              => 0,
+                    'checkStateWhenGetResource' => false,
+                    'heartbeatInterval'         => 60,
                 ],
             ],
             'resource'    => [
